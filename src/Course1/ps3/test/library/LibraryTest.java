@@ -34,8 +34,8 @@ public class LibraryTest {
     @Parameters(name="{0}")
     public static Object[] allImplementationClassNames() {
         return new Object[] {
-            "ps3.src.library.SmallLibrary",
-            "ps3.src.library.BigLibrary"
+            "Course1.ps3.src.library.SmallLibrary",
+            "Course1.ps3.src.library.BigLibrary"
         };
     }
 
