@@ -12,8 +12,7 @@ import ps3.src.library.Library;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test suite for Library ADT.
@@ -36,7 +35,7 @@ public class LibraryTest {
     public static Object[] allImplementationClassNames() {
         return new Object[] {
             "ps3.src.library.SmallLibrary",
-//            "ps3.src.library.BigLibrary"
+            "ps3.src.library.BigLibrary"
         };
     }
 
@@ -56,11 +55,7 @@ public class LibraryTest {
         try {
             Class<?> cls = Class.forName(implementationClassName);
             return (Library) cls.newInstance();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -91,7 +86,7 @@ public class LibraryTest {
      *  Checkin - before and after
      * find():
      *  title - case sensitivity
-     *  same bookcopy and different bookcopies
+     *  same book copy and different book copies
      *  authors - case sensitivity
      *  searched author's position in the author's list
      *  date ordering
@@ -114,7 +109,7 @@ public class LibraryTest {
     public void testBuyNewBookCopy() {
         BookCopy bookCopy = library.buy(book);
 
-        assertEquals(true, library.isAvailable(bookCopy));
+        assertTrue(library.isAvailable(bookCopy));
         assertEquals(1, library.allCopies(book).size());
         assertEquals(1, library.availableCopies(book).size());
     }
@@ -132,7 +127,7 @@ public class LibraryTest {
     }
 
     @Test
-    public void testcheckOutSingleBookAvailable() {
+    public void testCheckOutSingleBookAvailable() {
         BookCopy copy = library.buy(book);
 
         assertEquals(1, library.allCopies(book).size());
@@ -144,7 +139,7 @@ public class LibraryTest {
     }
 
     @Test
-    public void testcheckOutMoreThanBookAvailable() {
+    public void testCheckOutMoreThanBookAvailable() {
         BookCopy copy = library.buy(book);
         BookCopy anotherCopy = library.buy(book);
 
@@ -196,18 +191,18 @@ public class LibraryTest {
     @Test
     public void testIsAvailableBeforeAndAfterBuy() {
         BookCopy copy = null;
-        assertEquals(false, library.isAvailable(copy));
+        assertFalse(library.isAvailable(copy));
         copy = library.buy(book);
-        assertEquals(true, library.isAvailable(copy));
+        assertTrue(library.isAvailable(copy));
     }
 
     @Test
     public void testIsAvailableBeforeAndAfterCheckout() {
         BookCopy copy = library.buy(book);
-        assertEquals(true, library.isAvailable(copy));
+        assertTrue(library.isAvailable(copy));
 
         library.checkout(copy);
-        assertEquals(false, library.isAvailable(copy));
+        assertFalse(library.isAvailable(copy));
     }
 
     @Test
@@ -215,10 +210,10 @@ public class LibraryTest {
         BookCopy copy = library.buy(book);
 
         library.checkout(copy);
-        assertEquals(false, library.isAvailable(copy));
+        assertFalse(library.isAvailable(copy));
 
         library.checkin(copy);
-        assertEquals(true, library.isAvailable(copy));
+        assertTrue(library.isAvailable(copy));
     }
 
     @Test
@@ -229,7 +224,7 @@ public class LibraryTest {
     @Test
     public void testAllCopiesSingletonSet() {
         BookCopy copy = library.buy(book);
-        Set<BookCopy> availableCopies = new HashSet<>(Arrays.asList(copy));
+        Set<BookCopy> availableCopies = new HashSet<>(Collections.singletonList(copy));
         assertEquals(availableCopies, library.allCopies(book));
     }
 
@@ -245,7 +240,7 @@ public class LibraryTest {
     @Test
     public void testAllCopiesBeforeAndAfterCheckout() {
         BookCopy copy = library.buy(book);
-        Set<BookCopy> availableCopies = new HashSet<>(Arrays.asList(copy));
+        Set<BookCopy> availableCopies = new HashSet<>(Collections.singletonList(copy));
 
         assertEquals(availableCopies, library.allCopies(book));
         library.checkout(copy);
@@ -255,7 +250,7 @@ public class LibraryTest {
     @Test
     public void testAllCopiesBeforeAndAfterCheckin() {
         BookCopy copy = library.buy(book);
-        Set<BookCopy> availableCopies = new HashSet<>(Arrays.asList(copy));
+        Set<BookCopy> availableCopies = new HashSet<>(Collections.singletonList(copy));
 
         library.checkout(copy);
         assertEquals(availableCopies, library.allCopies(book));
@@ -271,7 +266,7 @@ public class LibraryTest {
     @Test
     public void testAvailableCopiesSingletonSet() {
         BookCopy copy = library.buy(book);
-        Set<BookCopy> availableCopies = new HashSet<>(Arrays.asList(copy));
+        Set<BookCopy> availableCopies = new HashSet<>(Collections.singletonList(copy));
         assertEquals(availableCopies, library.availableCopies(book));
     }
 
@@ -305,7 +300,7 @@ public class LibraryTest {
     public void testAvailableCopiesBeforeAndAfterCheckin() {
         BookCopy copy = library.buy(book);
 
-        Set<BookCopy> availableCopies = new HashSet<>(Arrays.asList(copy));
+        Set<BookCopy> availableCopies = new HashSet<>(Collections.singletonList(copy));
 
         library.checkout(copy);
         availableCopies.remove(copy);
@@ -320,7 +315,7 @@ public class LibraryTest {
     @Test
     public void testFindExactTitleMatch() {
         BookCopy copy = library.buy(book);
-        Book anotherBook = new Book("What", Arrays.asList("John"), 2004);
+        Book anotherBook = new Book("What", List.of("John"), 2004);
         BookCopy anotherBookCopy = library.buy(anotherBook);
 
         List<Book> expectedBooks = Arrays.asList(book, anotherBook);
@@ -336,7 +331,7 @@ public class LibraryTest {
         BookCopy copy = library.buy(book);
         BookCopy anotherCopy = library.buy(book);
 
-        List<Book> expectedBooks = Arrays.asList(book);
+        List<Book> expectedBooks = Collections.singletonList(book);
         assertEquals(1, library.find(book.getAuthors().get(0)).size());
         assertEquals(expectedBooks, library.find(book.getTitle()));
     }
@@ -351,7 +346,7 @@ public class LibraryTest {
 
     @Test
     public void testFindExactAuthorMatch() {
-        Book anotherBook = new Book("Nothing", Arrays.asList("Arthur"), 2004);
+        Book anotherBook = new Book("Nothing", List.of("Arthur"), 2004);
         Book yetAnotherBook = new Book("Locked", Arrays.asList("Jon", "Joseph"), 2000);
 
         BookCopy copy = library.buy(book);
@@ -369,7 +364,7 @@ public class LibraryTest {
         BookCopy copy = library.buy(book);
         BookCopy anotherCopy = library.buy(book);
 
-        List<Book> expectedBooks = Arrays.asList(book);
+        List<Book> expectedBooks = Collections.singletonList(book);
         assertEquals(1, library.find(book.getAuthors().get(0)).size());
         assertEquals(expectedBooks, library.find(book.getAuthors().get(0)));
     }
@@ -387,7 +382,7 @@ public class LibraryTest {
     public void testFindAuthorMatchFirstPosition() {
         BookCopy copy = library.buy(book);
 
-        List<Book> matches = Arrays.asList(book);
+        List<Book> matches = Collections.singletonList(book);
         assertEquals(matches, library.find(book.getAuthors().get(0)));
     }
 
@@ -396,14 +391,14 @@ public class LibraryTest {
         Book newBook = new Book("How to fly", Arrays.asList("Vic", "Kumar", "Arthur"), 2014);
         BookCopy newBookCopy = library.buy(newBook);
 
-        List<Book> matches = Arrays.asList(newBook);
+        List<Book> matches = List.of(newBook);
         assertEquals(matches, library.find(newBook.getAuthors().get(2)));
     }
 
     @Test
     public void testFindSameTitleAuthorDifferentPublicationDates() {
         BookCopy copy = library.buy(book);
-        Book anotherBook = new Book("What", Arrays.asList("Arthur"), 2015);
+        Book anotherBook = new Book("What", List.of("Arthur"), 2015);
         BookCopy anotherBookCopy = library.buy(anotherBook);
 
         List<Book> matches = Arrays.asList(anotherBook, book);
@@ -414,15 +409,15 @@ public class LibraryTest {
     public void testLoseSingleCopyAvailable() {
 
         BookCopy copy = library.buy(book);
-        Set<BookCopy> copies = new HashSet<>(Arrays.asList(copy));
+        Set<BookCopy> copies = new HashSet<>(Collections.singletonList(copy));
 
-        assertEquals(true, library.isAvailable(copy));
+        assertTrue(library.isAvailable(copy));
         assertEquals(copies, library.allCopies(book));
         assertEquals(copies, library.availableCopies(book));
 
         library.lose(copy);
 
-        assertEquals(false, library.isAvailable(copy));
+        assertFalse(library.isAvailable(copy));
         assertEquals(Collections.emptySet(), library.allCopies(book));
         assertEquals(Collections.emptySet(), library.availableCopies(book));
     }
@@ -436,14 +431,14 @@ public class LibraryTest {
 
         Set<BookCopy> copies = new HashSet<>(Arrays.asList(copy, anotherCopy));
 
-        assertEquals(true, library.isAvailable(copy));
+        assertTrue(library.isAvailable(copy));
         assertEquals(copies, library.allCopies(book));
         assertEquals(copies, library.availableCopies(book));
 
         library.lose(copy);
         copies.remove(copy);
 
-        assertEquals(false, library.isAvailable(copy));
+        assertFalse(library.isAvailable(copy));
         assertEquals(copies, library.allCopies(book));
         assertEquals(copies, library.availableCopies(book));
     }

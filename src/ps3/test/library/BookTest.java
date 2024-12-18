@@ -2,10 +2,8 @@ package ps3.test.library;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import ps3.src.library.Book;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,9 +17,9 @@ public class BookTest {
 
     @BeforeEach
     public void setUp() {
-        book1 = new Book("The Great Gatsby", Arrays.asList("F. Scott Fitzgerald"), 1925);
-        book2 = new Book("To Kill a Mockingbird", Arrays.asList("Harper Lee"), 1960);
-        book3 = new Book("The Great Gatsby", Arrays.asList("F. Scott Fitzgerald"), 1925); // identical to book1
+        book1 = new Book("The Great Gatsby", List.of("F. Scott Fitzgerald"), 1925);
+        book2 = new Book("To Kill a Mockingbird", List.of("Harper Lee"), 1960);
+        book3 = new Book("The Great Gatsby", List.of("F. Scott Fitzgerald"), 1925); // identical to book1
     }
 
     /**
@@ -29,7 +27,7 @@ public class BookTest {
      */
     @Test
     public void testConstructorValidInputs() {
-        assertDoesNotThrow(() -> new Book("1984", Arrays.asList("George Orwell"), 1949));
+        assertDoesNotThrow(() -> new Book("1984", List.of("George Orwell"), 1949));
     }
 
     /**
@@ -37,10 +35,10 @@ public class BookTest {
      */
     @Test
     public void testConstructorInvalidInputs() {
-        assertThrows(AssertionError.class, () -> new Book("", Arrays.asList("Author"), 2000), "Title must not be empty");
+        assertThrows(AssertionError.class, () -> new Book("", List.of("Author"), 2000), "Title must not be empty");
         assertThrows(AssertionError.class, () -> new Book("Title", Collections.emptyList(), 2000), "Authors list must not be empty");
-        assertThrows(AssertionError.class, () -> new Book("Title", Arrays.asList(""), 2000), "Author name must not be empty");
-        assertThrows(AssertionError.class, () -> new Book("Title", Arrays.asList("Author"), -1), "Year must be nonnegative");
+        assertThrows(AssertionError.class, () -> new Book("Title", List.of(""), 2000), "Author name must not be empty");
+        assertThrows(AssertionError.class, () -> new Book("Title", List.of("Author"), -1), "Year must be nonnegative");
     }
 
     /**
@@ -96,7 +94,7 @@ public class BookTest {
      */
     @Test
     public void testImmutability() {
-        List<String> externalAuthors = Arrays.asList("Mutable Author");
+        List<String> externalAuthors = List.of("Mutable Author");
         Book book = new Book("Title", externalAuthors, 2000);
         externalAuthors.set(0, "Changed Author"); // External change should not affect the book's authors
         assertEquals("Mutable Author", book.getAuthors().get(0), "Book's internal state should not be affected by changes to external inputs");
