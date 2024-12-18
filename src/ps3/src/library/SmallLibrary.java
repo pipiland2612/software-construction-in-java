@@ -1,97 +1,169 @@
 package ps3.src.library;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-/** 
+/**
  * SmallLibrary represents a small collection of books, like a single person's home collection.
  */
 public class SmallLibrary implements Library {
 
-    // This rep is required! 
-    // Do not change the types of inLibrary or checkedOut, 
-    // and don't add or remove any other fields.
-    // (BigLibrary is where you can create your own rep for
-    // a Library implementation.)
-
     // rep
     private Set<BookCopy> inLibrary;
     private Set<BookCopy> checkedOut;
-    
+
     // rep invariant:
     //    the intersection of inLibrary and checkedOut is the empty set
-    //
+
     // abstraction function:
     //    represents the collection of books inLibrary union checkedOut,
     //      where if a book copy is in inLibrary then it is available,
     //      and if a copy is in checkedOut then it is checked out
 
-    // TODO: safety from rep exposure argument
-    
     public SmallLibrary() {
-        throw new RuntimeException("not implemented yet");
+        inLibrary = new HashSet<>();
+        checkedOut = new HashSet<>();
+        checkRep();
     }
-    
+
     // assert the rep invariant
     private void checkRep() {
-        throw new RuntimeException("not implemented yet");
+        assert Collections.disjoint(inLibrary, checkedOut);
     }
 
     @Override
     public BookCopy buy(Book book) {
-        throw new RuntimeException("not implemented yet");
+        BookCopy copy = new BookCopy(book);
+        inLibrary.add(copy);
+        checkRep();
+        return copy;
     }
-    
+
     @Override
     public void checkout(BookCopy copy) {
-        throw new RuntimeException("not implemented yet");
+        if (!inLibrary.contains(copy))
+            throw new IllegalArgumentException("Book is not available");
+        inLibrary.remove(copy);
+        checkedOut.add(copy);
+        checkRep();
     }
-    
+
     @Override
     public void checkin(BookCopy copy) {
-        throw new RuntimeException("not implemented yet");
+        if (!checkedOut.contains(copy))
+            throw new IllegalArgumentException("Book was not checked out");
+        checkedOut.remove(copy);
+        inLibrary.add(copy);
+        checkRep();
     }
-    
+
     @Override
     public boolean isAvailable(BookCopy copy) {
-        throw new RuntimeException("not implemented yet");
+        return inLibrary.contains(copy);
     }
-    
+
     @Override
     public Set<BookCopy> allCopies(Book book) {
-        throw new RuntimeException("not implemented yet");
+        Set<BookCopy> allCopies = new HashSet<>();
+        for (BookCopy copy : inLibrary) {
+            if (copy.getBook().equals(book)) {
+                allCopies.add(copy);
+            }
+        }
+        for (BookCopy copy : checkedOut) {
+            if (copy.getBook().equals(book)) {
+                allCopies.add(copy);
+            }
+        }
+        return Collections.unmodifiableSet(allCopies);
     }
-    
+
     @Override
     public Set<BookCopy> availableCopies(Book book) {
-        throw new RuntimeException("not implemented yet");
+        Set<BookCopy> availableCopies = new HashSet<>();
+        for (BookCopy copy : inLibrary) {
+            if (copy.getBook().equals(book)) {
+                availableCopies.add(copy);
+            }
+        }
+        return Collections.unmodifiableSet(availableCopies);
     }
 
     @Override
     public List<Book> find(String query) {
-        throw new RuntimeException("not implemented yet");
-    }
-    
-    @Override
-    public void lose(BookCopy copy) {
-        throw new RuntimeException("not implemented yet");
+        Set<Book> matchingBooks = new HashSet<>();
+
+        findMatchingBooks(inLibrary, matchingBooks, query);
+        findMatchingBooks(checkedOut, matchingBooks, query);
+
+        List<Book> dict = new ArrayList<>(matchingBooks);
+        Collections.sort(dict);
+
+        return dict;
     }
 
-    // uncomment the following methods if you need to implement equals and hashCode,
+    /**
+     * Mutates matchingBooks with matches founded in the books present in
+     * the set of bookCopies
+     * @param bookSet the set of book copies
+     * @param matchingBooks the list of matching books
+     * @param query the search term
+     */
+    private void findMatchingBooks(Set<BookCopy> bookSet, Set<Book> matchingBooks, String query) {
+        for(BookCopy copy: bookSet) {
+            Book book = copy.getBook();
+            if(!matchingBooks.contains(book) && (isTitleMatching(book, query) || isAuthorMatching(book, query)) )
+                matchingBooks.add(book);
+        }
+        checkRep();
+    }
+
+    /**
+     * Returns whether the book's title is the same as the query(case-sensitive)
+     * @param book the book to query on
+     * @param query the search term
+     * @return true if the book's title matches query, false otherwise
+     */
+    private boolean isTitleMatching(Book book, String query) {
+        return book.getTitle().equals(query);
+    }
+
+    /**
+     * Returns whether one of the book's authors' names is
+     * the same as the query(case-sensitive)
+     * @param book the book to query on
+     * @param query the search term
+     * @return true if the one of the book's author's names matches query,
+     * false otherwise
+     */
+    private boolean isAuthorMatching(Book book, String query) {
+        for (String author: book.getAuthors()) {
+            if (author.equals(query)) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void lose(BookCopy copy) {
+        if (inLibrary.contains(copy)) {
+            inLibrary.remove(copy);
+        } else if (checkedOut.contains(copy)) {
+            checkedOut.remove(copy);
+        } else {
+            throw new IllegalArgumentException("Book not found in library or checked out");
+        }
+        checkRep();
+    }
+
+    // Uncomment the following methods if you need to implement equals and hashCode,
     // or delete them if you don't
+
     // @Override
     // public boolean equals(Object that) {
     //     throw new RuntimeException("not implemented yet");
     // }
-    // 
+    //
     // @Override
     // public int hashCode() {
     //     throw new RuntimeException("not implemented yet");
     // }
-    
-
-    /* Copyright (c) 2016 MIT 6.005 course staff, all rights reserved.
-     * Redistribution of original or derived work requires explicit permission.
-     * Don't post any of this code on the web or to a public Github repository.
-     */
 }
