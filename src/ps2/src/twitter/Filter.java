@@ -78,9 +78,8 @@ public class Filter {
 
         for (Tweet tweet : tweets){
             for (String s : tweet.getText().split(" ")){
-                if(dict.contains(s.toLowerCase())){
-                    res.add(tweet);
-                }
+                if(!dict.contains(s.toLowerCase()))continue;
+                res.add(tweet);
             }
         }
         return res.stream().toList();

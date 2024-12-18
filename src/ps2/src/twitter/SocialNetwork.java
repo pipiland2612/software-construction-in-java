@@ -1,8 +1,6 @@
 package ps2.src.twitter;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * SocialNetwork provides methods that operate on a social network.
@@ -38,20 +36,45 @@ public class SocialNetwork {
      *         either authors or @-mentions in the list of tweets.
      */
     public static Map<String, Set<String>> guessFollowsGraph(List<Tweet> tweets) {
-        throw new RuntimeException("not implemented");
+        Map<String, Set<String>> res = new HashMap<>();
+        for (Tweet tweet : tweets){
+            String author = tweet.getAuthor();
+            Set<String> mentionedUser = Extract.getMentionedUsers(List.of(tweet));
+            if(!mentionedUser.isEmpty())res.put(author, mentionedUser);
+        }
+        return res;
     }
 
     /**
      * Find the people in a social network who have the greatest influence, in
      * the sense that they have the most followers.
-     * 
+     *
      * @param followsGraph
      *            a social network (as defined above)
      * @return a list of all distinct Twitter usernames in followsGraph, in
      *         descending order of follower count.
      */
     public static List<String> influencers(Map<String, Set<String>> followsGraph) {
-        throw new RuntimeException("not implemented");
+        class Account{
+            String name;
+            int follower;
+            public Account(String name, int follower){
+                this.name = name;
+                this.follower = follower;
+            }
+        }
+        PriorityQueue<Account> maxHeap = new PriorityQueue<>(Comparator.comparingInt((Account a) -> a.follower).reversed());
+
+        for(Map.Entry<String, Set<String>> entry : followsGraph.entrySet()){
+            String user = entry.getKey();
+            Set<String> followers = entry.getValue();
+            maxHeap.add(new Account(user, followers.size()));
+        }
+        List<String> res = new ArrayList<>();
+        while (!maxHeap.isEmpty()){
+            res.add(maxHeap.poll().name);
+        }
+        return res;
     }
 
     /* Copyright (c) 2007-2016 MIT 6.005 course staff, all rights reserved.
