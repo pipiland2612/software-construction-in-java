@@ -115,7 +115,8 @@ public interface Expression {
 
     // TODO more instance methods
 
-    /* Copyright (c) 2015-2017 MIT 6.005 course staff, all rights reserved.
-     * Redistribution of original or derived work requires permission of course staff.
+    /**
+     * @return the Expression that is differentiated from currnt expression
      */
+    public Expression differentiate(String variable);
 }

@@ -27,4 +27,9 @@ public class Sum implements Expression {
     public int hashCode() {
         return Objects.hash(left, right);
     }
+
+    @Override
+    public Expression differentiate(String variable) {
+        return new Sum(left.differentiate(variable), right.differentiate(variable));
+    }
 }

@@ -6,7 +6,7 @@ public class Variable implements Expression {
     private final String name;
 
     public Variable(String name) {
-        if(name == null || name.isEmpty() || !name.matches("[A-Za-z]+"))
+        if (name == null || name.isEmpty() || !name.matches("[A-Za-z]+"))
             throw new IllegalArgumentException("Wrong param for variable");
         this.name = name;
     }
@@ -18,12 +18,17 @@ public class Variable implements Expression {
 
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof Variable other)) return false;
+        if (!(obj instanceof Variable other)) return false;
         return this.name.equals(other.name);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public Expression differentiate(String variable) {
+        return variable.equals(this.name) ? new Number(1) : new Number(0);
     }
 }

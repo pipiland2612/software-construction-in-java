@@ -27,4 +27,9 @@ public class Product implements Expression {
     public int hashCode() {
         return Objects.hash(left, right);
     }
+
+    @Override
+    public Expression differentiate(String variable) {
+        return new Sum(new Product(this.left.differentiate(variable), this.right), new Product(this.left, this.right.differentiate(variable)));
+    }
 }
