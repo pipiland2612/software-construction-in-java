@@ -5,7 +5,6 @@ import lib6005.parser.ParseTree;
 import lib6005.parser.Parser;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * An immutable data type representing a polynomial expression of:
@@ -20,7 +19,7 @@ import java.util.List;
  */
 public interface Expression {
 
-    enum ExpressionGrammar {ROOT, SUM, PRODUCT, PRIMITIVE, NUMBER, WHITESPACE}
+    enum ExpressionGrammar {ROOT, SUM, PRODUCT, PRIMITIVE, NUMBER, VARIABLE, WHITESPACE}
 
     /**
      * Parse an expression.
@@ -31,46 +30,65 @@ public interface Expression {
      */
     public static Expression parse(String input) {
         try {
-            Parser<ExpressionGrammar> parser = GrammarCompiler.compile(new File("Expression.g"), ExpressionGrammar.ROOT);
+            Parser<ExpressionGrammar> parser = GrammarCompiler.compile(
+                    new File("/Users/batman/Desktop/Java/SCJava/src/Course2/ps1/src/expressivo/Expression.g"),
+                    ExpressionGrammar.ROOT
+            );
             ParseTree<ExpressionGrammar> tree = parser.parse(input);
             return buildAST(tree);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid expression");
+            throw new IllegalArgumentException("Invalid expression", e);
         }
     }
 
     private static Expression buildAST(ParseTree<ExpressionGrammar> p) {
+
         switch (p.getName()) {
             case NUMBER:
-                return new Number(Double.parseDouble(p.getContents()));
+                double numberValue = Double.parseDouble(p.getContents());
+                return new Number(numberValue);
+            case VARIABLE:
+                String variableName = p.getContents();
+                return new Variable(variableName);
             case PRIMITIVE:
-                if (p.childrenByName(ExpressionGrammar.NUMBER).isEmpty()) {
-                    return buildAST(p.childrenByName(ExpressionGrammar.SUM).get(0));
-                } else {
+                if (!p.childrenByName(ExpressionGrammar.NUMBER).isEmpty())
                     return buildAST(p.childrenByName(ExpressionGrammar.NUMBER).get(0));
-                }
+
+                if (!p.childrenByName(ExpressionGrammar.VARIABLE).isEmpty())
+                    return buildAST(p.childrenByName(ExpressionGrammar.VARIABLE).get(0));
+
+                if (!p.childrenByName(ExpressionGrammar.SUM).isEmpty())
+                    return buildAST(p.childrenByName(ExpressionGrammar.SUM).get(0));
+                else
+                    throw new RuntimeException("Unexpected node in PRIMITIVE: " + p);
             case SUM:
-                Expression sumLeft = buildAST(p.childrenByName(ExpressionGrammar.PRODUCT).get(0));
-                // Get the remaining element and recursively build tree from those
-                List<ParseTree<ExpressionGrammar>> remainingProd = p.childrenByName(ExpressionGrammar.PRODUCT).subList(1, p.children().size());
-                for (ParseTree<ExpressionGrammar> child : remainingProd) {
-                    sumLeft = new Sum(sumLeft, buildAST(child));
-                }
-                return sumLeft;
+                return getResultRecursive(p, ExpressionGrammar.SUM);
             case PRODUCT:
-                Expression productLeft = buildAST(p.childrenByName(ExpressionGrammar.PRIMITIVE).get(0));
-                // Get the remaining element and recursively build tree from those
-                List<ParseTree<ExpressionGrammar>> remainingElems = p.childrenByName(ExpressionGrammar.PRIMITIVE).subList(1, p.children().size());
-                for (ParseTree<ExpressionGrammar> child : remainingElems) {
-                    productLeft = new Product(productLeft, buildAST(child));
-                }
-                return productLeft;
+                return getResultRecursive(p, ExpressionGrammar.PRODUCT);
             case ROOT:
                 return buildAST(p.childrenByName(ExpressionGrammar.SUM).get(0));
             default:
-                throw new RuntimeException("Unexpected tree node" + p);
+                throw new RuntimeException("Unexpected tree node: " + p);
         }
     }
+
+    private static Expression getResultRecursive(ParseTree<ExpressionGrammar> p, ExpressionGrammar currGrammar) {
+        ExpressionGrammar children = currGrammar == ExpressionGrammar.SUM ? ExpressionGrammar.PRODUCT : ExpressionGrammar.PRIMITIVE;
+        boolean first = true;
+        Expression result = null;
+        for (ParseTree<ExpressionGrammar> child : p.childrenByName(children)) {
+            if (first) {
+                result = buildAST(child);
+                first = false;
+            } else {
+                result = new Sum(result, buildAST(child));
+            }
+        }
+        if (first)
+            throw new RuntimeException(String.format("%s must have a non whitespace child: %s", currGrammar.toString(), p));
+        return result;
+    }
+
 
     /**
      * @return a parsable representation of this expression, such that

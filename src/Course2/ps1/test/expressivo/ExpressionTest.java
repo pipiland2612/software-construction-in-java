@@ -53,7 +53,18 @@ public class ExpressionTest {
                 "4 + 3 * x + 2 * x * x + 1 * x * x * (((x)))\n";
         String[] testCases = testString.split("\n");
 
+        for (String test : testCases) {
+            try {
+                Expression expression = Expression.parse(test);
+                assertNotNull(expression); // Ensure the result is not null
+                System.out.println("Parsed successfully: " + test);
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("Parser threw an exception for valid input: " + test);
+            }
+        }
     }
+
 
     @Test
     public void testInvalidParserInput() {
@@ -61,8 +72,14 @@ public class ExpressionTest {
                 "( 3\n" +
                 "3 x";
         String[] testCases = testString.split("\n");
-        for (String test : testCases) {
 
+        for (String test : testCases) {
+            try {
+                Expression.parse(test);
+                fail("Parser did not throw an exception for invalid input: " + test);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Correctly threw exception for: " + test);
+            }
         }
     }
 }
