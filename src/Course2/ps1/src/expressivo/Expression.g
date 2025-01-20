@@ -1,5 +1,5 @@
 root ::= sum;
-@skip whitespace{
+@skip whitespace {
 	sum ::= product ('+' product)*;
 	product ::= primitive ('*' primitive)*;
 	primitive ::= number | variable | '(' sum ')';

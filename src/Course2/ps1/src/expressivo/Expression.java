@@ -62,33 +62,42 @@ public interface Expression {
                 else
                     throw new RuntimeException("Unexpected node in PRIMITIVE: " + p);
             case SUM:
-                return getResultRecursive(p, ExpressionGrammar.SUM);
+                boolean first = true;
+                Expression result = null;
+                for (ParseTree<ExpressionGrammar> child : p.childrenByName(ExpressionGrammar.PRODUCT)) {
+                    if (first) {
+                        result = buildAST(child);
+                        first = false;
+                    } else {
+                        result = new Sum(result, buildAST(child));
+                    }
+                }
+                if (first) {
+                    throw new RuntimeException("sum must have a non whitespace child:" + p);
+                }
+                return result;
+
             case PRODUCT:
-                return getResultRecursive(p, ExpressionGrammar.PRODUCT);
+                boolean f = true;
+                Expression res = null;
+                for (ParseTree<ExpressionGrammar> child : p.childrenByName(ExpressionGrammar.PRIMITIVE)) {
+                    if (f) {
+                        res = buildAST(child);
+                        f = false;
+                    } else {
+                        res = new Product(res, buildAST(child));
+                    }
+                }
+                if (f) {
+                    throw new RuntimeException("sum must have a non whitespace child:" + p);
+                }
+                return res;
             case ROOT:
                 return buildAST(p.childrenByName(ExpressionGrammar.SUM).get(0));
             default:
                 throw new RuntimeException("Unexpected tree node: " + p);
         }
     }
-
-    private static Expression getResultRecursive(ParseTree<ExpressionGrammar> p, ExpressionGrammar currGrammar) {
-        ExpressionGrammar children = currGrammar == ExpressionGrammar.SUM ? ExpressionGrammar.PRODUCT : ExpressionGrammar.PRIMITIVE;
-        boolean first = true;
-        Expression result = null;
-        for (ParseTree<ExpressionGrammar> child : p.childrenByName(children)) {
-            if (first) {
-                result = buildAST(child);
-                first = false;
-            } else {
-                result = new Sum(result, buildAST(child));
-            }
-        }
-        if (first)
-            throw new RuntimeException(String.format("%s must have a non whitespace child: %s", currGrammar.toString(), p));
-        return result;
-    }
-
 
     /**
      * @return a parsable representation of this expression, such that

@@ -50,6 +50,7 @@ public class ExpressionTest {
                 "((3 + 4) * x * x)\n" +
                 "foo + bar+baz\n" +
                 "(2*x    )+    (    y*x    )\n" +
+                "3 * x * x + 3 * x * x\n" +
                 "4 + 3 * x + 2 * x * x + 1 * x * x * (((x)))\n";
         String[] testCases = testString.split("\n");
 
@@ -78,6 +79,19 @@ public class ExpressionTest {
             } catch (IllegalArgumentException e) {
                 System.out.println("Correctly threw exception for: " + test);
             }
+        }
+    }
+
+    @Test
+    public void testDifferentiateMethod() {
+        String testString = "3 * x\n" +
+                "3\n" +
+                "3 * x * x" +
+                "3 * x * x + 3 * x * x";
+        String[] testCases = testString.split("\n");
+
+        for (String test : testCases) {
+            System.out.println(Commands.differentiate(test, "x"));
         }
     }
 }
