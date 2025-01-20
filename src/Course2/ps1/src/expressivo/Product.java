@@ -2,11 +2,11 @@ package expressivo;
 
 import java.util.Objects;
 
-public class Multiplication implements Expression {
+public class Product implements Expression {
     private final Expression left;
     private final Expression right;
 
-    public Multiplication(Expression left, Expression right) {
+    public Product(Expression left, Expression right) {
         this.left = left;
         this.right = right;
     }
@@ -18,7 +18,7 @@ public class Multiplication implements Expression {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Multiplication other))
+        if (!(obj instanceof Product other))
             return false;
         return this.left.equals(other.left) && this.right.equals(other.right);
     }

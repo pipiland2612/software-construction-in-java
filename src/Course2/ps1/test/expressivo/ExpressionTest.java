@@ -30,16 +30,16 @@ public class ExpressionTest {
 
     @Test
     public void testAddition() {
-        Expression add = new Addition(new Number(1), new Variable("x"));
+        Expression add = new Sum(new Number(1), new Variable("x"));
         assertEquals("(1.0 + x)", add.toString());
-        assertEquals(new Addition(new Number(1), new Variable("x")), add);
+        assertEquals(new Sum(new Number(1), new Variable("x")), add);
     }
 
     @Test
     public void testMultiplication() {
-        Expression mul = new Multiplication(new Variable("x"), new Variable("y"));
+        Expression mul = new Product(new Variable("x"), new Variable("y"));
         assertEquals("(x * y)", mul.toString());
-        assertEquals(new Multiplication(new Variable("x"), new Variable("y")), mul);
+        assertEquals(new Product(new Variable("x"), new Variable("y")), mul);
     }
 
     @Test
