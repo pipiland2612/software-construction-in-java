@@ -3,24 +3,67 @@
  */
 package expressivo;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests for the Expression abstract data type.
  */
 public class ExpressionTest {
 
-    // Testing strategy
-    //   TODO
-    
-    @Test(expected=AssertionError.class)
-    public void testAssertionsEnabled() {
-        assert false; // make sure assertions are enabled with VM argument: -ea
+    @Test
+    public void testNumber() {
+        Expression num = new Number(3.5);
+        assertEquals("3.5", num.toString());
+        assertEquals(new Number(3.5), num);
+        assertNotEquals(new Number(4.0), num);
     }
-    
-    
-    // TODO tests for Expression
-    
+
+    @Test
+    public void testVariable() {
+        Expression var = new Variable("x");
+        assertEquals("x", var.toString());
+        assertEquals(new Variable("x"), var);
+        assertNotEquals(new Variable("y"), var);
+    }
+
+    @Test
+    public void testAddition() {
+        Expression add = new Addition(new Number(1), new Variable("x"));
+        assertEquals("(1.0 + x)", add.toString());
+        assertEquals(new Addition(new Number(1), new Variable("x")), add);
+    }
+
+    @Test
+    public void testMultiplication() {
+        Expression mul = new Multiplication(new Variable("x"), new Variable("y"));
+        assertEquals("(x * y)", mul.toString());
+        assertEquals(new Multiplication(new Variable("x"), new Variable("y")), mul);
+    }
+
+    @Test
+    public void testValidParserInput() {
+        String testString = "3 + 2.4\n" +
+                "3 * x + 2.4\n" +
+                "3 * (x + 2.4)\n" +
+                "((3 + 4) * x * x)\n" +
+                "foo + bar+baz\n" +
+                "(2*x    )+    (    y*x    )\n" +
+                "4 + 3 * x + 2 * x * x + 1 * x * x * (((x)))\n";
+        String[] testCases = testString.split("\n");
+
+    }
+
+    @Test
+    public void testInvalidParserInput() {
+        String testString = "3 *\n" +
+                "( 3\n" +
+                "3 x";
+        String[] testCases = testString.split("\n");
+        for (String test : testCases) {
+
+        }
+    }
 }
+
