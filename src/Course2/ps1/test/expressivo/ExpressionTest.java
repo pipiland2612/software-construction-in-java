@@ -56,10 +56,8 @@ public class ExpressionTest {
         for (String test : testCases) {
             try {
                 Expression expression = Expression.parse(test);
-                assertNotNull(expression); // Ensure the result is not null
-                System.out.println("Parsed successfully: " + test);
+                assertNotNull(expression);
             } catch (Exception e) {
-                e.printStackTrace();
                 fail("Parser threw an exception for valid input: " + test);
             }
         }
