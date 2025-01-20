@@ -86,8 +86,8 @@ public class ExpressionTest {
     public void testDifferentiateMethod() {
         String testString = "3 * x\n" +
                 "3\n" +
-                "3 * x * x" +
-                "3 * x * x + 3 * x * x";
+                "3 * x * x\n" +
+                "3 * x * x + 3 * x * x\n";
         String[] testCases = testString.split("\n");
 
         for (String test : testCases) {

@@ -5,6 +5,7 @@ import lib6005.parser.ParseTree;
 import lib6005.parser.Parser;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * An immutable data type representing a polynomial expression of:
@@ -125,7 +126,16 @@ public interface Expression {
     // TODO more instance methods
 
     /**
-     * @return the Expression that is differentiated from currnt expression
+     * @param variable that is chosen to differentiated
+     * @return the Expression get from differentiate current expression
      */
     public Expression differentiate(String variable);
+
+    /**
+     * @param environment that is list of Key-Value pairs with key is the variable and value is numerical value associated with it
+     * @return the Expression get from subtituting value into current expression
+     */
+    public Expression simplify(Map<String, Double> environment);
+
+    public Expression subtitute(Map<String, Double> environment);
 }

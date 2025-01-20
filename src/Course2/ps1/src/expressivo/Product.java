@@ -1,5 +1,6 @@
 package expressivo;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class Product implements Expression {
@@ -31,5 +32,23 @@ public class Product implements Expression {
     @Override
     public Expression differentiate(String variable) {
         return new Sum(new Product(this.left.differentiate(variable), this.right), new Product(this.left, this.right.differentiate(variable)));
+    }
+
+    @Override
+    public Expression simplify(Map<String, Double> environment) {
+        Expression leftSubtitute = left.subtitute(environment);
+        Expression rightSubtitute = right.subtitute(environment);
+
+        if (leftSubtitute instanceof Number && rightSubtitute instanceof Number) {
+            double leftValue = ((Number) leftSubtitute).getValue();
+            double rightValue = ((Number) rightSubtitute).getValue();
+            return new Number(leftValue * rightValue);
+        }
+
+        return new Product(leftSubtitute, rightSubtitute);
+    }
+
+    public Expression subtitute(Map<String, Double> environment) {
+        return new Product(left.subtitute(environment), right.subtitute(environment));
     }
 }
