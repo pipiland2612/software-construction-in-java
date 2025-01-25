@@ -3,8 +3,6 @@
  */
 package expressivo;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 /**
@@ -14,13 +12,15 @@ public class CommandsTest {
 
     // Testing strategy
     //   TODO
-    
-    @Test(expected=AssertionError.class)
-    public void testAssertionsEnabled() {
-        assert false; // make sure assertions are enabled with VM argument: -ea
+
+    @Test
+    public void testValidCases(String input) {
+        String[] testCases = {
+                "x*x*x",
+                "x*x*x + y*y*y",
+                "1+2*3+8*0.5"
+        };
+
+
     }
-    
-    
-    // TODO tests for Commands.differentiate() and Commands.simplify()
-    
 }
